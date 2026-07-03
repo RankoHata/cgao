@@ -1,0 +1,37 @@
+{
+  "name": "cgao",
+  "version": "0.1.0",
+  "description": "Claude GitHub Auto Orchestra — multi-phase automated GitHub workflow plugin for Claude Code",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "cgao": "bin/cgao.js"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "bridge",
+    "agents",
+    "commands",
+    "skills",
+    "hooks",
+    ".claude-plugin",
+    ".mcp.json",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc && node scripts/build-mcp-server.mjs",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.26.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "esbuild": "^0.27.0",
+    "typescript": "^5.7.0"
+  },
+  "engines": { "node": ">=20.0.0" },
+  "license": "MIT"
+}

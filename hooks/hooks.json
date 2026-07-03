@@ -1,0 +1,17 @@
+{
+  "description": "CGAO workflow automation hooks",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node -e \"const p=require('fs');const d=require('path').join(process.cwd(),'.cgao');if(!p.existsSync(d))p.mkdirSync(d,{recursive:true});const f=p.readdirSync(d).filter(x=>x.startsWith('workflow-'));if(f.length)console.log(JSON.stringify({continue:true,systemMessage:'CGAO: '+f.length+' active workflow(s) found. Use /cgao:monitor or check .cgao/'}));else console.log(JSON.stringify({continue:true}));\"",
+            "timeout": 2
+          }
+        ]
+      }
+    ]
+  }
+}
