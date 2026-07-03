@@ -74,27 +74,27 @@ claude mcp list
 # Should show "github" in the list
 ```
 
-### Step 2: Clone & Build CGAO
+### Step 2: Install CGAO Plugin
+
+CGAO is installed directly from its GitHub repository. Claude Code automatically fetches the repo, reads `.claude-plugin/plugin.json`, and registers all skills, MCP servers, and commands.
+
+```bash
+claude plugins install https://github.com/RankoHata/cgao
+```
+
+That's it. No clone, no npm install, no build — everything is pre-built in the repo.
+
+<details>
+<summary>Alternative: install from local clone (development)</summary>
 
 ```bash
 git clone git@github.com:RankoHata/cgao.git
 cd cgao
 npm install
 npm run build
-```
-
-This compiles TypeScript to `dist/` and bundles the MCP server to `bridge/mcp-server.cjs`.
-
-### Step 3: Register CGAO with Claude Code
-
-```bash
 claude plugins install .
 ```
-
-This registers the plugin from the current directory. Claude Code reads `.claude-plugin/plugin.json` and discovers:
-- **6 skills** → `/cgao:scan`, `/cgao:evaluate`, `/cgao:fix`, `/cgao:pr-create`, `/cgao:review`, `/cgao:monitor`
-- **MCP servers** → official GitHub MCP + CGAO custom MCP (`.mcp.json`)
-- **Commands** → 6 command shims for lazy loading
+</details>
 
 Verify:
 
@@ -103,7 +103,12 @@ claude plugins list
 # Should show "cgao" with version 0.1.0
 ```
 
-### Step 4: Verify Everything
+Claude Code discovers from the plugin:
+- **6 skills** → `/cgao:scan`, `/cgao:evaluate`, `/cgao:fix`, `/cgao:pr-create`, `/cgao:review`, `/cgao:monitor`
+- **2 MCP servers** → official GitHub MCP + CGAO custom MCP (`mcp__cgao__*`)
+- **6 commands** → lazy-load shims
+
+### Step 3: Verify Everything
 
 ```bash
 cgao setup
@@ -137,19 +142,20 @@ claude mcp add github --transport stdio \
 
 **"Plugin not showing up"**
 ```bash
-# Re-install from the correct directory
-cd /path/to/cgao
-npm run build
-claude plugins install .
+# Re-install
+claude plugins uninstall cgao
+claude plugins install https://github.com/RankoHata/cgao
 claude plugins list
 ```
 
 **"mcp__cgao__* tools not found"**
 ```bash
-# Make sure the MCP server bundle was built
-ls bridge/mcp-server.cjs
-# If missing:
-npm run build
+# Verify the MCP server is registered
+claude mcp list
+# Should show both "github" and "cgao"
+# If cgao is missing, re-install the plugin
+claude plugins uninstall cgao
+claude plugins install https://github.com/RankoHata/cgao
 # Then restart Claude Code
 ```
 
