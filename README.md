@@ -74,15 +74,29 @@ claude mcp list
 # Should show "github" in the list
 ```
 
-### Step 2: Install CGAO Plugin
+### Step 2: Add CGAO Marketplace & Install
 
-CGAO is installed directly from its GitHub repository. Claude Code automatically fetches the repo, reads `.claude-plugin/plugin.json`, and registers all skills, MCP servers, and commands.
+First, add the CGAO marketplace (this registers the GitHub repo as a plugin source):
+
+```bash
+claude plugins marketplace add cgao https://github.com/RankoHata/cgao
+```
+
+Then install the plugin from the marketplace:
+
+```bash
+claude plugins install cgao
+```
+
+That's it. No clone, no npm install, no build — Claude Code fetches the repo, reads `.claude-plugin/plugin.json`, and registers all skills, MCP servers, and commands automatically.
+
+<details>
+<summary>Alternative: install directly from GitHub URL (one step)</summary>
 
 ```bash
 claude plugins install https://github.com/RankoHata/cgao
 ```
-
-That's it. No clone, no npm install, no build — everything is pre-built in the repo.
+</details>
 
 <details>
 <summary>Alternative: install from local clone (development)</summary>
@@ -140,11 +154,19 @@ claude mcp add github --transport stdio \
   -- npx -y @anthropic-ai/github-mcp-server
 ```
 
+**"Plugin not found in marketplace"**
+```bash
+# Verify marketplace is added
+claude plugins marketplace list
+# If missing:
+claude plugins marketplace add cgao https://github.com/RankoHata/cgao
+```
+
 **"Plugin not showing up"**
 ```bash
-# Re-install
+# Re-install from marketplace
 claude plugins uninstall cgao
-claude plugins install https://github.com/RankoHata/cgao
+claude plugins install cgao
 claude plugins list
 ```
 

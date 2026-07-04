@@ -1,0 +1,28 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "cgao",
+  "description": "Claude GitHub Auto Orchestra — multi-phase automated GitHub issue→fix→PR→review→merge pipeline with specialized agents and intelligent MCP tools",
+  "owner": {
+    "name": "RankoHata"
+  },
+  "plugins": [
+    {
+      "name": "cgao",
+      "description": "Automated GitHub workflow plugin: scan issues, evaluate, fix, create PRs, review code, and monitor merge status — all from within Claude Code. Features 6 specialized skills, 3 intelligent agents, and smart quality gates.",
+      "version": "0.1.0",
+      "source": "./",
+      "category": "developer-tools",
+      "homepage": "https://github.com/RankoHata/cgao",
+      "tags": [
+        "github",
+        "issues",
+        "pull-requests",
+        "code-review",
+        "automation",
+        "ci-cd",
+        "workflow"
+      ]
+    }
+  ],
+  "version": "0.1.0"
+}
