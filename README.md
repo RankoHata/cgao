@@ -72,39 +72,36 @@ claude mcp list
 # Should show "github" in the list
 ```
 
-### Step 2: Add CGAO Marketplace & Install
+### Step 2: Install CGAO
 
-First, add the CGAO marketplace (this registers the GitHub repo as a plugin source):
+在 Claude Code 会话中，通过 `/plugin` 命令安装：
 
-```bash
-claude plugins marketplace add cgao https://github.com/RankoHata/cgao
+```
+/plugin install https://github.com/RankoHata/cgao
 ```
 
-Then install the plugin from the marketplace:
+或从本地开发目录安装：
 
-```bash
-claude plugins install cgao
 ```
-
-That's it. No clone, no npm install, no build — Claude Code fetches the repo, reads `.claude-plugin/plugin.json`, and registers all skills, MCP servers, and commands automatically.
+/plugin marketplace add /path/to/cgao
+/plugin install cgao
+```
 
 <details>
-<summary>Alternative: install directly from GitHub URL (one step)</summary>
+<summary>开发者：克隆 dev 分支本地安装</summary>
 
 ```bash
-claude plugins install https://github.com/RankoHata/cgao
-```
-</details>
-
-<details>
-<summary>Alternative: install from local clone (development)</summary>
-
-```bash
-git clone git@github.com:RankoHata/cgao.git
+git clone -b dev git@github.com:RankoHata/cgao.git
 cd cgao
 npm install
 npm run build
-claude plugins install .
+```
+
+然后在 Claude Code 会话中：
+
+```
+/plugin marketplace add ./cgao
+/plugin install cgao
 ```
 </details>
 
@@ -117,7 +114,7 @@ claude plugins list
 
 Claude Code discovers from the plugin:
 - **6 skills** → `/cgao:scan`, `/cgao:evaluate`, `/cgao:fix`, `/cgao:pr-create`, `/cgao:review`, `/cgao:monitor`
-- **2 MCP servers** → official GitHub MCP + CGAO custom MCP (`mcp__cgao__*`)
+- **1 MCP server** → CGAO custom MCP (`mcp__cgao__*`) + GitHub MCP is a prerequisite
 - **6 commands** → lazy-load shims
 
 ### Step 3: Verify Everything
@@ -150,20 +147,18 @@ export GITHUB_PAT=ghp_xxxx
 claude mcp add-json github '{"type":"http","url":"https://api.githubcopilot.com/mcp","headers":{"Authorization":"Bearer '"$GITHUB_PAT"'"}}'
 ```
 
-**"Plugin not found in marketplace"**
-```bash
-# Verify marketplace is added
-claude plugins marketplace list
-# If missing:
-claude plugins marketplace add cgao https://github.com/RankoHata/cgao
+**"Plugin not found"**
+```
+# 在 Claude Code 会话中重装
+/plugin uninstall cgao
+/plugin install https://github.com/RankoHata/cgao
 ```
 
 **"Plugin not showing up"**
-```bash
-# Re-install from marketplace
-claude plugins uninstall cgao
-claude plugins install cgao
-claude plugins list
+```
+/plugin list
+# 如果没有，重装
+/plugin install https://github.com/RankoHata/cgao
 ```
 
 **"mcp__cgao__* tools not found"**
@@ -171,9 +166,9 @@ claude plugins list
 # Verify the MCP server is registered
 claude mcp list
 # Should show both "github" and "cgao"
-# If cgao is missing, re-install the plugin
-claude plugins uninstall cgao
-claude plugins install https://github.com/RankoHata/cgao
+# If cgao is missing, re-install the plugin:
+# /plugin uninstall cgao
+# /plugin install https://github.com/RankoHata/cgao
 # Then restart Claude Code
 ```
 
