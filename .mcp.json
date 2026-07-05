@@ -2,11 +2,7 @@
   "mcpServers": {
     "cgao": {
       "command": "node",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/bridge/mcp-server.cjs"],
-      "env": {
-        "GITHUB_TOKEN": "${GITHUB_PAT}",
-        "CGAO_STATE_DIR": "${CLAUDE_PLUGIN_ROOT}/.cgao"
-      }
+      "args": ["${CLAUDE_PLUGIN_ROOT}/bridge/mcp-server.cjs"]
     }
   }
 }

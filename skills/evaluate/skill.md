@@ -14,13 +14,23 @@ Performs deep evaluation of a single issue: codebase analysis, impact estimation
 /cgao:evaluate 42        # Deep evaluate issue #42
 ```
 
+## Architecture: GitHub MCP fetches data, CGAO MCP analyzes it
+
+CGAO tools **NEVER** call GitHub's API directly. The data flow is always:
+
+```
+GitHub MCP (fetch issue) → CGAO MCP (triage + analyze) → State files (.cgao/)
+```
+
+You fetch the issue from GitHub, then pass it to CGAO for analysis.
+
 ## Tools Used
 
 | Tool | Purpose |
 |------|---------|
-| `mcp__github__get_issue` | Fetch full issue details |
-| `mcp__cgao__cgao_triage_issue` | Classify and severity assessment |
-| `mcp__cgao__cgao_analyze_codebase` | Find relevant files and code areas |
+| `mcp__github__issue_read` | **Step 1:** Fetch full issue details |
+| `mcp__cgao__cgao_triage_issue` | **Step 2:** Classify and assess severity |
+| `mcp__cgao__cgao_analyze_codebase` | **Step 3:** Find relevant files and code areas |
 | `mcp__cgao__cgao_workflow_state` | Update workflow tracking |
 
 ## Agent
@@ -31,17 +41,32 @@ Use the **issue-triage** agent for classification logic.
 
 ## Phase 1: Fetch & Triage
 
-1. Call `mcp__github__get_issue` to get the full issue body and metadata
-2. Call `mcp__cgao__cgao_triage_issue` to classify
-3. Read the triage result carefully
+**Step 1.1** — Fetch the issue:
+Call `mcp__github__issue_read` with `method: "get"` and the issue number.
+This returns the full issue object (title, body, labels, state, assignee, etc.).
+
+**Step 1.2** — Classify the issue:
+Call `mcp__cgao__cgao_triage_issue` with:
+- `issue_number`: the issue number
+- `issue`: the FULL issue object returned by `mcp__github__issue_read` in Step 1.1
+
+**Do NOT call cgao_triage_issue without first fetching the issue via GitHub MCP.**
+CGAO tools do NOT reach out to GitHub — they analyze data you provide.
+
+Read the triage result carefully. Note: classification, severity, scope, recommendation.
 
 ## Phase 2: Codebase Analysis
 
-1. Extract key terms from the issue (file names, function names, error messages)
+1. Extract key terms from the issue body (file names, function names, error messages)
 2. Call `mcp__cgao__cgao_analyze_codebase` with:
-   - `issue_number`: the issue
-   - `search_terms`: extracted terms from Phase 1
+   - `issue_number`: the issue number
+   - `issue_title`: title from Step 1.1
+   - `issue_body`: body text from Step 1.1
+   - `search_terms`: extracted terms from above
 3. Review the analysis output — note suggested starting points
+
+`cgao_analyze_codebase` searches the LOCAL filesystem and git history.
+It does NOT call GitHub's API — it only needs the issue text you provide.
 
 ## Phase 3: Effort Estimation
 
@@ -96,7 +121,8 @@ If NO-GO: <reason and alternative>
 ## Rules
 
 1. **Never skip evaluation** — every fix must pass through this gate
-2. Call `mcp__cgao__cgao_workflow_state` with `action: "set", phase: "evaluated"` after completion
-3. If NO-GO, explain clearly and suggest alternatives
+2. **Always fetch via GitHub MCP first** — CGAO tools need data you provide
+3. Call `mcp__cgao__cgao_workflow_state` with `action: "set", phase: "evaluated"` after completion
+4. If NO-GO, explain clearly and suggest alternatives
 
 Task: {{ARGUMENTS}}

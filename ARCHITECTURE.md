@@ -81,14 +81,13 @@ MCP 协议的服务声明。Claude Code 读取此文件，为每个条目 spawn 
   "mcpServers": {
     "cgao": {                               // → mcp__cgao__*
       "command": "node",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/bridge/mcp-server.cjs"],
-      "env": { "GITHUB_TOKEN": "${GITHUB_PAT}", "CGAO_STATE_DIR": "..." }
+      "args": ["${CLAUDE_PLUGIN_ROOT}/bridge/mcp-server.cjs"]
     }
   }
 }
 ```
 
-> GitHub MCP Server (`github/github-mcp-server`) 是用户通过 `claude mcp add-json` 单独安装的前置依赖，不在插件 `.mcp.json` 中声明。
+> GitHub MCP Server (`github/github-mcp-server`) 是用户通过 `claude mcp add-json` 单独安装的前置依赖，不在插件 `.mcp.json` 中声明。**CGAO 不持有任何 GitHub token——所有 GitHub API 访问通过 GitHub MCP 完成。**
 
 **两个 MCP 服务器的分工**：
 | 服务器 | 工具数 | 职责 |
@@ -112,46 +111,31 @@ export { getAgentDefinitions, ... } from './agents/definitions.js';
 export { resolveRepo, getIssue, ... } from './github/api.js';
 ```
 
-### `src/github/api.ts` (90 lines)
+### `src/github/api.ts` (~30 lines)
 
-GitHub REST API 的轻量封装。**注意：这不是 MCP 工具的直接实现，而是 MCP 工具调用的底层函数。**
+**仅包含本地操作**。CGAO **绝不**直接调用 GitHub REST API。
 
 ```
-调用链:
-  Agent → mcp__cgao__cgao_triage_issue
-       → src/mcp/tools.ts: handler()
-       → src/github/api.ts: getIssue() / ghFetch()
-       → https://api.github.com
+调用链（修复后）:
+  Agent → mcp__github__issue_read (GitHub MCP → GitHub API) → 获取 issue 数据
+       → mcp__cgao__cgao_triage_issue (CGAO MCP) → 传入 issue 数据 → 分类分析
 ```
 
 **核心设计**：
 
 ```typescript
-// Token 解析优先级：env GITHUB_TOKEN → env GITHUB_PAT → gh auth token
-export function resolveToken(): string { ... }
-
-// 通用 fetch 包装，自动附 token 和版本头
-async function ghFetch<T>(path: string, opts = {}): Promise<T> { ... }
-
-// Issue 操作
-export async function getIssue(owner, repo, num): Promise<GHIssue> { ... }
-export async function listIssues(owner, repo, opts): Promise<GHIssue[]> { ... }
-export async function addComment(owner, repo, num, body) { ... }
-
-// PR 操作
-export async function getPR(owner, repo, num): Promise<GHPR> { ... }
-export async function listPRs(owner, repo, opts): Promise<GHPR[]> { ... }
-export async function getPRStatus(owner, repo, ref) { ... }
-export async function getPRChecks(owner, repo, ref) { ... }
-export async function listReviews(owner, repo, num) { ... }
-
-// Repo 解析：从 git remote 自动推断 owner/repo
+// Repo 解析：从 git remote 自动推断 owner/repo（纯本地操作）
 export function resolveRepo(): { owner: string; repo: string } { ... }
 ```
 
-**类型定义**：`GHIssue` 和 `GHPR` 接口只包含 CGAO 需要的字段，而非完整的 GitHub API 响应。
+**已删除的函数**（v0.2.0）：
+- ~~`resolveToken()`~~ — CGAO 不再自行获取 token。认证由 GitHub MCP 处理。
+- ~~`ghFetch()`~~ — CGAO 不再发送 HTTP 请求到 `api.github.com`。
+- ~~`getIssue()`, `getPR()`, `getPRStatus()`, `getPRChecks()`, `listReviews()`~~ — 这些数据由 `mcp__github__*` 工具获取后作为参数传入 CGAO 工具。
 
-**与官方 GitHub MCP 的关系**：官方 MCP 工具（`mcp__github__*`）处理 Agent 直接调用的 API 操作（如 `create_pull_request`）。CGAO 的 API 层（`src/github/api.ts`）在自定义 MCP 工具中使用，用于**读取数据来支撑智能分析**（如 triage 时读取 issue 内容，merge check 时聚合多个 API 的结果）。
+**类型定义**：`GHIssue` 和 `GHPR` 接口保留，用于文档和 TypeScript 类型检查。它们描述 GitHub MCP 工具返回的数据形态。
+
+**与官方 GitHub MCP 的关系**：GitHub MCP（`mcp__github__*`）处理**所有** GitHub API 操作（读和写）。CGAO 工具（`mcp__cgao__*`）接收 GitHub MCP 返回的数据作为参数，在其之上添加智能分析（分类、代码搜索、质量启发式、状态持久化）。CGAO 工具没有网络访问——只有本地文件系统和 git 命令。
 
 ### `src/mcp/tools.ts` (511 lines) — 核心
 
@@ -169,12 +153,14 @@ interface ToolDef {
 
 **逐个工具分析**：
 
-#### `cgao_triage_issue` (~120 lines)
+#### `cgao_triage_issue` (~90 lines)
 
 ```
-输入:  issue_number
+输入:  issue_number, issue (完整的 issue 对象，来自 mcp__github__issue_read)
 输出:  classification, severity, scope, actionable, recommendation
 ```
+
+**重要**: 此工具不调用 GitHub API。调用者必须先通过 `mcp__github__issue_read` 获取 issue 数据，然后将完整 issue 对象传入。
 
 **分类启发式规则**（不依赖 AI，纯代码逻辑）：
 - 检测 label (bug/enhancement/feature) + title/body 关键词
@@ -246,16 +232,21 @@ interface ToolDef {
 
 **设计意图**：在代码 push 之前捕获问题。不是替代 CI——是 CI 之前的本地门禁。
 
-#### `cgao_check_merge_readiness` (~110 lines)
+#### `cgao_check_merge_readiness` (~90 lines)
 
 ```
-输入:  pr_number
+输入:  pr_number, pr (来自 mcp__github__pull_request_read), 
+       reviews (来自 mcp__github__pull_request_read get_reviews),
+       ci_status (来自 mcp__github__pull_request_read get_status),
+       check_runs (来自 mcp__github__pull_request_read get_check_runs)
 输出:  status(READY/BLOCKED), blockers[], warnings[], 
        ci_state, reviews{approved, changes_requested},
        mergeable, recommended_action
 ```
 
-**聚合分析**（4+ API 调用）：
+**重要**: 此工具不调用 GitHub API。调用者必须先通过 `mcp__github__pull_request_read` 的四种方法获取所有 PR 数据，然后全部传入此工具。
+
+**聚合分析**（纯数据处理，无网络访问）：
 1. `getPR()` → 基础信息 + mergeable
 2. `getPRStatus()` → CI 状态 (pending/success/failure)
 3. `getPRChecks()` → 具体 check run 状态
@@ -561,14 +552,18 @@ npm bin 入口。`package.json` 中 `"bin": { "cgao": "bin/cgao.js" }` 使 npm �
 │   → 官方 GitHub MCP Server (用户前置安装)      │
 │   → GitHub API → 返回 issue 列表             │
 │                                             │
-│ Step 2: mcp__cgao__cgao_triage_issue (#42)  │
+│ Step 2: mcp__github__issue_read (#42)       │
+│   → 官方 GitHub MCP Server                  │
+│   → GitHub API → 返回完整 issue 对象          │
+│                                             │
+│ Step 3: mcp__cgao__cgao_triage_issue        │
 │   → CGAO MCP Server (node bridge/mcp-server) │
-│   → src/mcp/tools.ts: triage 逻辑            │
-│   → src/github/api.ts: getIssue() → 分类     │
+│   → 接收 issue 对象作为参数（不调用 API）      │
+│   → 分类启发式 + 严重性推断 + 范围估算         │
 │   → 写入 .cgao/triage-42.json               │
 │   → 返回分类结果                              │
 │                                             │
-│ Step 3: Agent 汇总所有 issue 的分类结果        │
+│ Step 4: Agent 汇总所有 issue 的分类结果        │
 │   → 生成优先排序报告                          │
 └─────────────────────────────────────────────┘
 ```

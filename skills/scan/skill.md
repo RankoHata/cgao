@@ -16,12 +16,23 @@ Discover and triage GitHub issues. Scans the repository for open issues, classif
 /cgao:scan "good first issue"           # Scan beginner-friendly issues
 ```
 
+## Architecture: GitHub MCP fetches data, CGAO MCP analyzes it
+
+CGAO tools **NEVER** call GitHub's API directly. They receive data you already
+fetched via GitHub MCP tools and add intelligence (classification, analysis, planning).
+The flow is always:
+
+```
+GitHub MCP (fetch) → CGAO MCP (analyze) → State file (.cgao/)
+```
+
 ## Tools Used
 
 | Tool | Purpose |
 |------|---------|
 | `mcp__github__search_issues` | Find issues matching query |
 | `mcp__github__list_issues` | List repo issues with filters |
+| `mcp__github__issue_read` | Fetch full issue details |
 | `mcp__cgao__cgao_triage_issue` | **Classify and assess each issue** |
 
 ---
@@ -34,7 +45,24 @@ Discover and triage GitHub issues. Scans the repository for open issues, classif
 
 ## Phase 2: Triage Each Issue
 
-For each candidate issue, call `mcp__cgao__cgao_triage_issue` with the issue number.
+For each candidate issue, you MUST follow this two-step pattern:
+
+**Step A — Fetch the full issue:**
+Call `mcp__github__issue_read` with `method: "get"` and the issue number.
+This returns the full issue object with title, body, labels, state, assignee, etc.
+
+**Step B — Classify with CGAO:**
+Call `mcp__cgao__cgao_triage_issue` with:
+- `issue_number`: the issue number
+- `issue`: the FULL issue object from Step A (pass the entire JSON response)
+
+```
+Example:
+  1. mcp__github__issue_read({method: "get", issue_number: 42})
+     → returns {title: "...", body: "...", labels: [...], state: "open", ...}
+  2. mcp__cgao__cgao_triage_issue({issue_number: 42, issue: <the object from step 1>})
+     → returns classification, severity, recommendation
+```
 
 The triage tool returns:
 - **classification**: bug / feature / question / other
@@ -74,7 +102,8 @@ The triage tool returns:
 
 ## Decision Rules
 
-- **Never mark an issue as "fix" without calling `cgao_triage_issue`** — the triage tool does the analysis
+- **Never mark an issue as "fix" without calling both `mcp__github__issue_read` AND `mcp__cgao__cgao_triage_issue`**
+- **Always fetch the issue first** — `cgao_triage_issue` needs the full issue object, it does NOT fetch it for you
 - If all issues are low severity, report that and suggest broadening the search
 - If unsure about an issue, flag it for manual review rather than guessing
 

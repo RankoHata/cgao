@@ -1,11 +1,22 @@
 /**
- * GitHub API Helper
+ * GitHub API Helper — LOCAL OPERATIONS ONLY
  *
- * Supplementary client for operations that need codebase context
- * or multi-step aggregation beyond single GH API calls.
- * Uses GITHUB_TOKEN env var or falls back to `gh auth token`.
+ * CGAO does NOT make direct HTTP calls to the GitHub API.
+ * All GitHub data is fetched by the official GitHub MCP server
+ * (`mcp__github__*` tools) and passed into CGAO tools as parameters.
+ *
+ * This module provides:
+ * - resolveRepo() — local git remote parsing (no network)
+ * - Type interfaces — describe GitHub API response shapes for reference
  */
-export declare function resolveToken(): string;
+/**
+ * Resolve repo owner/name from local git remote.
+ * Purely local operation — reads `git remote get-url origin`, no API calls.
+ */
+export declare function resolveRepo(): {
+    owner: string;
+    repo: string;
+};
 export interface GHIssue {
     number: number;
     title: string;
@@ -24,13 +35,6 @@ export interface GHIssue {
         login: string;
     };
 }
-export declare function getIssue(owner: string, repo: string, num: number): Promise<GHIssue>;
-export declare function listIssues(owner: string, repo: string, opts?: {
-    state?: string;
-    labels?: string;
-    per_page?: number;
-}): Promise<GHIssue[]>;
-export declare function addComment(owner: string, repo: string, issueNum: number, body: string): Promise<unknown>;
 export interface GHPR {
     number: number;
     title: string;
@@ -53,37 +57,3 @@ export interface GHPR {
     draft: boolean;
     mergeable: boolean | null;
 }
-export declare function getPR(owner: string, repo: string, num: number): Promise<GHPR>;
-export declare function listPRs(owner: string, repo: string, opts?: {
-    state?: string;
-    per_page?: number;
-}): Promise<GHPR[]>;
-export declare function getPRStatus(owner: string, repo: string, ref: string): Promise<{
-    state: string;
-    statuses: Array<{
-        context: string;
-        state: string;
-        description: string;
-    }>;
-}>;
-export declare function getPRChecks(owner: string, repo: string, ref: string): Promise<{
-    total_count: number;
-    check_runs: Array<{
-        name: string;
-        status: string;
-        conclusion: string | null;
-    }>;
-}>;
-export declare function listReviews(owner: string, repo: string, prNum: number): Promise<{
-    id: number;
-    state: string;
-    body: string;
-    user: {
-        login: string;
-    };
-    submitted_at: string;
-}[]>;
-export declare function resolveRepo(): {
-    owner: string;
-    repo: string;
-};

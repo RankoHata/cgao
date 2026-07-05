@@ -111,7 +111,7 @@ var require_code = __commonJS({
     }
     exports2._ = _;
     var plus = new _Code("+");
-    function str(strs, ...args) {
+    function str2(strs, ...args) {
       const expr = [safeStringify(strs[0])];
       let i = 0;
       while (i < args.length) {
@@ -122,7 +122,7 @@ var require_code = __commonJS({
       optimize(expr);
       return new _Code(expr);
     }
-    exports2.str = str;
+    exports2.str = str2;
     function addCodeArg(code, arg) {
       if (arg instanceof _Code)
         code.push(...arg._items);
@@ -165,7 +165,7 @@ var require_code = __commonJS({
       return;
     }
     function strConcat(c1, c2) {
-      return c2.emptyStr() ? c1 : c1.emptyStr() ? c2 : str`${c1}${c2}`;
+      return c2.emptyStr() ? c1 : c1.emptyStr() ? c2 : str2`${c1}${c2}`;
     }
     exports2.strConcat = strConcat;
     function interpolate(x) {
@@ -869,9 +869,9 @@ var require_codegen = __commonJS({
       forOf(nameOrPrefix, iterable, forBody, varKind = scope_1.varKinds.const) {
         const name = this._scope.toName(nameOrPrefix);
         if (this.opts.es5) {
-          const arr = iterable instanceof code_1.Name ? iterable : this.var("_arr", iterable);
-          return this.forRange("_i", 0, (0, code_1._)`${arr}.length`, (i) => {
-            this.var(name, (0, code_1._)`${arr}[${i}]`);
+          const arr2 = iterable instanceof code_1.Name ? iterable : this.var("_arr", iterable);
+          return this.forRange("_i", 0, (0, code_1._)`${arr2}.length`, (i) => {
+            this.var(name, (0, code_1._)`${arr2}[${i}]`);
             forBody(name);
           });
         }
@@ -879,12 +879,12 @@ var require_codegen = __commonJS({
       }
       // `for-in` statement.
       // With option `ownProperties` replaced with a `for-of` loop for object keys
-      forIn(nameOrPrefix, obj, forBody, varKind = this.opts.es5 ? scope_1.varKinds.var : scope_1.varKinds.const) {
+      forIn(nameOrPrefix, obj2, forBody, varKind = this.opts.es5 ? scope_1.varKinds.var : scope_1.varKinds.const) {
         if (this.opts.ownProperties) {
-          return this.forOf(nameOrPrefix, (0, code_1._)`Object.keys(${obj})`, forBody);
+          return this.forOf(nameOrPrefix, (0, code_1._)`Object.keys(${obj2})`, forBody);
         }
         const name = this._scope.toName(nameOrPrefix);
-        return this._for(new ForIter("in", varKind, name, obj), () => forBody(name));
+        return this._for(new ForIter("in", varKind, name, obj2), () => forBody(name));
       }
       // end `for` loop
       endFor() {
@@ -1070,9 +1070,9 @@ var require_util = __commonJS({
     exports2.checkStrictMode = exports2.getErrorPath = exports2.Type = exports2.useFunc = exports2.setEvaluated = exports2.evaluatedPropsToName = exports2.mergeEvaluated = exports2.eachItem = exports2.unescapeJsonPointer = exports2.escapeJsonPointer = exports2.escapeFragment = exports2.unescapeFragment = exports2.schemaRefOrVal = exports2.schemaHasRulesButRef = exports2.schemaHasRules = exports2.checkUnknownRules = exports2.alwaysValidSchema = exports2.toHash = void 0;
     var codegen_1 = require_codegen();
     var code_1 = require_code();
-    function toHash(arr) {
+    function toHash(arr2) {
       const hash = {};
-      for (const item of arr)
+      for (const item of arr2)
         hash[item] = true;
       return hash;
     }
@@ -1127,22 +1127,22 @@ var require_util = __commonJS({
       return (0, codegen_1._)`${topSchemaRef}${schemaPath}${(0, codegen_1.getProperty)(keyword)}`;
     }
     exports2.schemaRefOrVal = schemaRefOrVal;
-    function unescapeFragment(str) {
-      return unescapeJsonPointer(decodeURIComponent(str));
+    function unescapeFragment(str2) {
+      return unescapeJsonPointer(decodeURIComponent(str2));
     }
     exports2.unescapeFragment = unescapeFragment;
-    function escapeFragment(str) {
-      return encodeURIComponent(escapeJsonPointer(str));
+    function escapeFragment(str2) {
+      return encodeURIComponent(escapeJsonPointer(str2));
     }
     exports2.escapeFragment = escapeFragment;
-    function escapeJsonPointer(str) {
-      if (typeof str == "number")
-        return `${str}`;
-      return str.replace(/~/g, "~0").replace(/\//g, "~1");
+    function escapeJsonPointer(str2) {
+      if (typeof str2 == "number")
+        return `${str2}`;
+      return str2.replace(/~/g, "~0").replace(/\//g, "~1");
     }
     exports2.escapeJsonPointer = escapeJsonPointer;
-    function unescapeJsonPointer(str) {
-      return str.replace(/~1/g, "/").replace(/~0/g, "~");
+    function unescapeJsonPointer(str2) {
+      return str2.replace(/~1/g, "/").replace(/~0/g, "~");
     }
     exports2.unescapeJsonPointer = unescapeJsonPointer;
     function eachItem(xs, f) {
@@ -2167,8 +2167,8 @@ var require_json_schema_traverse = __commonJS({
         post(schema, jsonPtr, rootSchema, parentJsonPtr, parentKeyword, parentSchema, keyIndex);
       }
     }
-    function escapeJsonPtr(str) {
-      return str.replace(/~/g, "~0").replace(/\//g, "~1");
+    function escapeJsonPtr(str2) {
+      return str2.replace(/~/g, "~0").replace(/\//g, "~1");
     }
   }
 });
@@ -2704,11 +2704,11 @@ var require_validate = __commonJS({
         if (!this.allErrors)
           this.gen.if(cond);
       }
-      setParams(obj, assign) {
+      setParams(obj2, assign) {
         if (assign)
-          Object.assign(this.params, obj);
+          Object.assign(this.params, obj2);
         else
-          this.params = obj;
+          this.params = obj2;
       }
       block$data(valid, codeBlock, $dataValid = codegen_1.nil) {
         this.gen.block(() => {
@@ -3232,10 +3232,10 @@ var require_utils = __commonJS({
         return { host, isIPV6: false };
       }
     }
-    function findToken(str, token) {
+    function findToken(str2, token) {
       let ind = 0;
-      for (let i = 0; i < str.length; i++) {
-        if (str[i] === token) ind++;
+      for (let i = 0; i < str2.length; i++) {
+        if (str2[i] === token) ind++;
       }
       return ind;
     }
@@ -3972,7 +3972,7 @@ var require_core = __commonJS({
     var util_1 = require_util();
     var $dataRefSchema = require_data();
     var uri_1 = require_uri();
-    var defaultRegExp = (str, flags) => new RegExp(str, flags);
+    var defaultRegExp = (str2, flags) => new RegExp(str2, flags);
     defaultRegExp.code = "new RegExp";
     var META_IGNORE_OPTIONS = ["removeAdditional", "useDefaults", "coerceTypes"];
     var EXT_SCOPE_NAMES = /* @__PURE__ */ new Set([
@@ -4767,16 +4767,16 @@ var require_ucs2length = __commonJS({
   "node_modules/ajv/dist/runtime/ucs2length.js"(exports2) {
     "use strict";
     Object.defineProperty(exports2, "__esModule", { value: true });
-    function ucs2length(str) {
-      const len = str.length;
+    function ucs2length(str2) {
+      const len = str2.length;
       let length = 0;
       let pos = 0;
       let value;
       while (pos < len) {
         length++;
-        value = str.charCodeAt(pos++);
+        value = str2.charCodeAt(pos++);
         if (value >= 55296 && value <= 56319 && pos < len) {
-          value = str.charCodeAt(pos);
+          value = str2.charCodeAt(pos);
           if ((value & 64512) === 56320)
             pos++;
         }
@@ -6659,8 +6659,8 @@ var require_formats = __commonJS({
     }
     var DATE = /^(\d\d\d\d)-(\d\d)-(\d\d)$/;
     var DAYS = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    function date3(str) {
-      const matches = DATE.exec(str);
+    function date3(str2) {
+      const matches = DATE.exec(str2);
       if (!matches)
         return false;
       const year = +matches[1];
@@ -6679,8 +6679,8 @@ var require_formats = __commonJS({
     }
     var TIME = /^(\d\d):(\d\d):(\d\d(?:\.\d+)?)(z|([+-])(\d\d)(?::?(\d\d))?)?$/i;
     function getTime(strictTimeZone) {
-      return function time3(str) {
-        const matches = TIME.exec(str);
+      return function time3(str2) {
+        const matches = TIME.exec(str2);
         if (!matches)
           return false;
         const hr = +matches[1];
@@ -6726,8 +6726,8 @@ var require_formats = __commonJS({
     var DATE_TIME_SEPARATOR = /t|\s/i;
     function getDateTime(strictTimeZone) {
       const time3 = getTime(strictTimeZone);
-      return function date_time(str) {
-        const dateTime = str.split(DATE_TIME_SEPARATOR);
+      return function date_time(str2) {
+        const dateTime = str2.split(DATE_TIME_SEPARATOR);
         return dateTime.length === 2 && date3(dateTime[0]) && time3(dateTime[1]);
       };
     }
@@ -6752,13 +6752,13 @@ var require_formats = __commonJS({
     }
     var NOT_URI_FRAGMENT = /\/|:/;
     var URI = /^(?:[a-z][a-z0-9+\-.]*:)(?:\/?\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:]|%[0-9a-f]{2})*@)?(?:\[(?:(?:(?:(?:[0-9a-f]{1,4}:){6}|::(?:[0-9a-f]{1,4}:){5}|(?:[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){4}|(?:(?:[0-9a-f]{1,4}:){0,1}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){3}|(?:(?:[0-9a-f]{1,4}:){0,2}[0-9a-f]{1,4})?::(?:[0-9a-f]{1,4}:){2}|(?:(?:[0-9a-f]{1,4}:){0,3}[0-9a-f]{1,4})?::[0-9a-f]{1,4}:|(?:(?:[0-9a-f]{1,4}:){0,4}[0-9a-f]{1,4})?::)(?:[0-9a-f]{1,4}:[0-9a-f]{1,4}|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?))|(?:(?:[0-9a-f]{1,4}:){0,5}[0-9a-f]{1,4})?::[0-9a-f]{1,4}|(?:(?:[0-9a-f]{1,4}:){0,6}[0-9a-f]{1,4})?::)|[Vv][0-9a-f]+\.[a-z0-9\-._~!$&'()*+,;=:]+)\]|(?:(?:25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(?:25[0-5]|2[0-4]\d|[01]?\d\d?)|(?:[a-z0-9\-._~!$&'()*+,;=]|%[0-9a-f]{2})*)(?::\d*)?(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*|\/(?:(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*)?|(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})+(?:\/(?:[a-z0-9\-._~!$&'()*+,;=:@]|%[0-9a-f]{2})*)*)(?:\?(?:[a-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9a-f]{2})*)?(?:#(?:[a-z0-9\-._~!$&'()*+,;=:@/?]|%[0-9a-f]{2})*)?$/i;
-    function uri(str) {
-      return NOT_URI_FRAGMENT.test(str) && URI.test(str);
+    function uri(str2) {
+      return NOT_URI_FRAGMENT.test(str2) && URI.test(str2);
     }
     var BYTE = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/gm;
-    function byte(str) {
+    function byte(str2) {
       BYTE.lastIndex = 0;
-      return BYTE.test(str);
+      return BYTE.test(str2);
     }
     var MIN_INT32 = -(2 ** 31);
     var MAX_INT32 = 2 ** 31 - 1;
@@ -6772,11 +6772,11 @@ var require_formats = __commonJS({
       return true;
     }
     var Z_ANCHOR = /[^\\]\\Z/;
-    function regex(str) {
-      if (Z_ANCHOR.test(str))
+    function regex(str2) {
+      if (Z_ANCHOR.test(str2))
         return false;
       try {
-        new RegExp(str);
+        new RegExp(str2);
         return true;
       } catch (e) {
         return false;
@@ -7117,8 +7117,8 @@ function defineLazy(object3, key, getter) {
     configurable: true
   });
 }
-function objectClone(obj) {
-  return Object.create(Object.getPrototypeOf(obj), Object.getOwnPropertyDescriptors(obj));
+function objectClone(obj2) {
+  return Object.create(Object.getPrototypeOf(obj2), Object.getOwnPropertyDescriptors(obj2));
 }
 function assignProp(target, prop, value) {
   Object.defineProperty(target, prop, {
@@ -7139,10 +7139,10 @@ function mergeDefs(...defs) {
 function cloneDef(schema) {
   return mergeDefs(schema._zod.def);
 }
-function getElementAtPath(obj, path) {
+function getElementAtPath(obj2, path) {
   if (!path)
-    return obj;
-  return path.reduce((acc, key) => acc?.[key], obj);
+    return obj2;
+  return path.reduce((acc, key) => acc?.[key], obj2);
 }
 function promiseAllObject(promisesObj) {
   const keys = Object.keys(promisesObj);
@@ -7157,14 +7157,14 @@ function promiseAllObject(promisesObj) {
 }
 function randomString(length = 10) {
   const chars = "abcdefghijklmnopqrstuvwxyz";
-  let str = "";
+  let str2 = "";
   for (let i = 0; i < length; i++) {
-    str += chars[Math.floor(Math.random() * chars.length)];
+    str2 += chars[Math.floor(Math.random() * chars.length)];
   }
-  return str;
+  return str2;
 }
-function esc(str) {
-  return JSON.stringify(str);
+function esc(str2) {
+  return JSON.stringify(str2);
 }
 function slugify(input) {
   return input.toLowerCase().trim().replace(/[^\w\s-]/g, "").replace(/[\s_-]+/g, "-").replace(/^-+|-+$/g, "");
@@ -7278,8 +7278,8 @@ var primitiveTypes = /* @__PURE__ */ new Set([
   "symbol",
   "undefined"
 ]);
-function escapeRegex(str) {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function escapeRegex(str2) {
+  return str2.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 function clone(inst, def, params) {
   const cl = new inst._zod.constr(def ?? inst._zod.def);
@@ -7601,9 +7601,9 @@ function parsedType(data) {
       if (Array.isArray(data)) {
         return "array";
       }
-      const obj = data;
-      if (obj && Object.getPrototypeOf(obj) !== Object.prototype && "constructor" in obj && obj.constructor) {
-        return obj.constructor.name;
+      const obj2 = data;
+      if (obj2 && Object.getPrototypeOf(obj2) !== Object.prototype && "constructor" in obj2 && obj2.constructor) {
+        return obj2.constructor.name;
       }
     }
   }
@@ -7621,8 +7621,8 @@ function issue(...args) {
   }
   return { ...iss };
 }
-function cleanEnum(obj) {
-  return Object.entries(obj).filter(([k, _]) => {
+function cleanEnum(obj2) {
+  return Object.entries(obj2).filter(([k, _]) => {
     return Number.isNaN(Number.parseInt(k, 10));
   }).map((el) => el[1]);
 }
@@ -15466,56 +15466,13 @@ var import_path = require("path");
 
 // src/github/api.ts
 var import_child_process = require("child_process");
-var _tokenCache = null;
-function resolveToken() {
-  const now = Date.now();
-  if (_tokenCache && now - _tokenCache.ts < 6e4) return _tokenCache.token;
-  const token = process.env.GITHUB_TOKEN || process.env.GITHUB_PAT || "";
-  if (token) {
-    _tokenCache = { token, ts: now };
-    return token;
-  }
-  try {
-    const t = (0, import_child_process.execSync)("gh auth token", { encoding: "utf-8", stdio: ["ignore", "pipe", "ignore"], timeout: 5e3 }).trim();
-    if (t) {
-      _tokenCache = { token: t, ts: now };
-      return t;
-    }
-  } catch {
-  }
-  throw new Error("No GitHub token. Set GITHUB_TOKEN or GITHUB_PAT, or run `gh auth login`.");
-}
-async function ghFetch(path, opts = {}) {
-  const url = path.startsWith("https://") ? path : `https://api.github.com${path}`;
-  const headers = {
-    Authorization: `Bearer ${resolveToken()}`,
-    Accept: "application/vnd.github+json",
-    "X-GitHub-Api-Version": "2022-11-28",
-    "User-Agent": "cgao-plugin"
-  };
-  if (opts.body) headers["Content-Type"] = "application/json";
-  const res = await fetch(url, { method: opts.method || "GET", headers, body: opts.body ? JSON.stringify(opts.body) : void 0 });
-  if (!res.ok) throw new Error(`GitHub API ${res.status}: ${await res.text().catch(() => "?")}`);
-  return res.json();
-}
-async function getIssue(owner, repo2, num) {
-  return ghFetch(`/repos/${owner}/${repo2}/issues/${num}`);
-}
-async function getPR(owner, repo2, num) {
-  return ghFetch(`/repos/${owner}/${repo2}/pulls/${num}`);
-}
-async function getPRStatus(owner, repo2, ref) {
-  return ghFetch(`/repos/${owner}/${repo2}/commits/${ref}/status`);
-}
-async function getPRChecks(owner, repo2, ref) {
-  return ghFetch(`/repos/${owner}/${repo2}/commits/${ref}/check-runs`);
-}
-async function listReviews(owner, repo2, prNum) {
-  return ghFetch(`/repos/${owner}/${repo2}/pulls/${prNum}/reviews`);
-}
 function resolveRepo() {
   try {
-    const url = (0, import_child_process.execSync)("git remote get-url origin", { encoding: "utf-8", stdio: ["ignore", "pipe", "ignore"], timeout: 5e3 }).trim();
+    const url = (0, import_child_process.execSync)("git remote get-url origin", {
+      encoding: "utf-8",
+      stdio: ["ignore", "pipe", "ignore"],
+      timeout: 5e3
+    }).trim();
     const m = url.match(/github\.com[/:]([^/]+)\/([^/]+?)(?:\.git)?$/);
     if (m) return { owner: m[1], repo: m[2] };
   } catch {
@@ -15524,19 +15481,15 @@ function resolveRepo() {
 }
 
 // src/mcp/tools.ts
-var import_fs2 = require("fs");
 function ok(t) {
   return { content: [{ type: "text", text: t }] };
 }
 function err(t) {
   return { content: [{ type: "text", text: t }], isError: true };
 }
-async function repo() {
-  return resolveRepo();
-}
 var STATE_DIR = process.env.CGAO_STATE_DIR || (0, import_path.join)(process.cwd(), ".cgao");
 function ensureStateDir() {
-  if (!(0, import_fs.existsSync)(STATE_DIR)) (0, import_fs2.mkdirSync)(STATE_DIR, { recursive: true });
+  if (!(0, import_fs.existsSync)(STATE_DIR)) (0, import_fs.mkdirSync)(STATE_DIR, { recursive: true });
 }
 function readState(key) {
   const p = (0, import_path.join)(STATE_DIR, `${key}.json`);
@@ -15549,15 +15502,32 @@ function readState(key) {
 }
 function writeState(key, data) {
   ensureStateDir();
-  (0, import_fs2.writeFileSync)((0, import_path.join)(STATE_DIR, `${key}.json`), JSON.stringify({ ...data, _updated: (/* @__PURE__ */ new Date()).toISOString() }, null, 2));
+  (0, import_fs.writeFileSync)(
+    (0, import_path.join)(STATE_DIR, `${key}.json`),
+    JSON.stringify({ ...data, _updated: (/* @__PURE__ */ new Date()).toISOString() }, null, 2)
+  );
 }
 function shell(cmd, cwd) {
   try {
-    return (0, import_child_process2.execSync)(cmd, { encoding: "utf-8", cwd: cwd || process.cwd(), stdio: ["ignore", "pipe", "pipe"], timeout: 6e4 }).trim();
+    return (0, import_child_process2.execSync)(cmd, {
+      encoding: "utf-8",
+      cwd: cwd || process.cwd(),
+      stdio: ["ignore", "pipe", "pipe"],
+      timeout: 6e4
+    }).trim();
   } catch (e) {
     const ex = e;
     return ex.stdout || ex.stderr || ex.message || "command failed";
   }
+}
+function str(v, fallback = "") {
+  return typeof v === "string" ? v : fallback;
+}
+function arr(v) {
+  return Array.isArray(v) ? v : [];
+}
+function obj(v) {
+  return v && typeof v === "object" && !Array.isArray(v) ? v : null;
 }
 var tools = [
   // =================================================================
@@ -15567,53 +15537,91 @@ var tools = [
     name: "cgao_triage_issue",
     description: `Analyze a GitHub issue and classify it: determine if it's a bug/feature/question,
 estimate severity and implementation complexity, and recommend whether CGAO should fix it.
-Use BEFORE planning any fix \u2014 this is the mandatory evaluation gate.`,
+Use BEFORE planning any fix \u2014 this is the mandatory evaluation gate.
+
+IMPORTANT \u2014 You MUST fetch the issue data FIRST using a GitHub MCP tool, then pass it here:
+  1. Call mcp__github__issue_read (method: "get") or mcp__github__search_issues
+  2. Pass the returned issue object as the "issue" parameter below
+This tool does NOT call GitHub's API \u2014 it only analyzes data you provide.`,
     schema: {
       type: "object",
       properties: {
-        owner: { type: "string", description: "Repo owner. Auto-detected if omitted." },
-        repo: { type: "string", description: "Repo name. Auto-detected if omitted." },
-        issue_number: { type: "number", description: "Issue number to triage." }
+        issue_number: {
+          type: "number",
+          description: "Issue number (used for state file naming)."
+        },
+        issue: {
+          type: "object",
+          description: "Full issue object from mcp__github__issue_read or mcp__github__search_issues. Must include: title, body, state, labels (array of {name}), assignee, html_url, number."
+        }
       },
-      required: ["issue_number"]
+      required: ["issue_number", "issue"]
     },
     handler: async (args) => {
       try {
-        const { owner, repo: repoName } = await repo();
-        const rOwner = args.owner || owner;
-        const rRepo = args.repo || repoName;
         const num = args.issue_number;
-        const issue2 = await getIssue(rOwner, rRepo, num);
-        const title = (issue2.title || "").toLowerCase();
-        const body = (issue2.body || "").toLowerCase();
-        const labels = issue2.labels.map((l) => l.name.toLowerCase());
-        const isBug = labels.includes("bug") || /\b(bug|broken|error|crash|fail|incorrect|wrong|regression)\b/.test(title + " " + body);
-        const isFeature = labels.includes("enhancement") || labels.includes("feature") || /\b(feature request|enhancement|add support for|please add)\b/.test(title + " " + body);
-        const isQuestion = /\b(how do i|how to|what is|question|help)\b/.test(title + " " + body) && !isBug;
-        const hasRepro = /\b(steps to reproduce|reproduce|reproduction|to reproduce)\b/.test(body);
+        const issue2 = args.issue;
+        if (!issue2) {
+          return err(
+            'Missing required parameter "issue". First call mcp__github__issue_read (method: "get") to fetch the issue, then pass the returned object here.'
+          );
+        }
+        const title = str(issue2.title).toLowerCase();
+        const body = str(issue2.body).toLowerCase();
+        const state = str(issue2.state, "open");
+        const htmlUrl = str(issue2.html_url);
+        const labels = arr(issue2.labels).map(
+          (l) => str(l.name).toLowerCase()
+        );
+        const assignee = obj(issue2.assignee);
+        const isBug = labels.includes("bug") || /\b(bug|broken|error|crash|fail|incorrect|wrong|regression)\b/.test(
+          title + " " + body
+        );
+        const isFeature = labels.includes("enhancement") || labels.includes("feature") || /\b(feature request|enhancement|add support for|please add)\b/.test(
+          title + " " + body
+        );
+        const isQuestion = /\b(how do i|how to|what is|question|help)\b/.test(
+          title + " " + body
+        ) && !isBug;
+        const hasRepro = /\b(steps to reproduce|reproduce|reproduction|to reproduce)\b/.test(
+          body
+        );
         const hasError = /\b(error|exception|stack trace|traceback)\b/.test(body);
         let severity = "medium";
-        if (/\b(security|vulnerability|xss|sql injection|auth|permission|data leak|exposure)\b/.test(title + " " + body)) severity = "critical";
-        else if (/\b(crash|segfault|panic|deadlock|race condition|memory leak|corruption)\b/.test(title + " " + body)) severity = "high";
-        else if (isFeature && /\b(major|significant|large|breaking)\b/.test(body)) severity = "high";
+        if (/\b(security|vulnerability|xss|sql injection|auth|permission|data leak|exposure)\b/.test(
+          title + " " + body
+        ))
+          severity = "critical";
+        else if (/\b(crash|segfault|panic|deadlock|race condition|memory leak|corruption)\b/.test(
+          title + " " + body
+        ))
+          severity = "high";
+        else if (isFeature && /\b(major|significant|large|breaking)\b/.test(body))
+          severity = "high";
         let scope = "unknown";
         const fileRefs = body.match(/`?([\w/.-]+\.(ts|js|py|go|rs|java|rb))`?/g) || [];
-        if (fileRefs.length > 5 || /\b(multi|several|many files|large refactor|architecture|restructure)\b/.test(body)) scope = "large";
-        else if (fileRefs.length > 2 || /\b(moderate|a few files|several changes)\b/.test(body)) scope = "medium";
-        else if (fileRefs.length > 0 || /\b(small|minor|simple|single file|one line)\b/.test(body)) scope = "small";
-        const actionable = (isBug || isFeature) && !isQuestion && issue2.state === "open";
-        const shouldFix = actionable && !issue2.assignee;
+        if (fileRefs.length > 5 || /\b(multi|several|many files|large refactor|architecture|restructure)\b/.test(
+          body
+        ))
+          scope = "large";
+        else if (fileRefs.length > 2 || /\b(moderate|a few files|several changes)\b/.test(body))
+          scope = "medium";
+        else if (fileRefs.length > 0 || /\b(small|minor|simple|single file|one line)\b/.test(body))
+          scope = "small";
+        const actionable = (isBug || isFeature) && !isQuestion && state === "open";
+        const shouldFix = actionable && !assignee;
         let recommendation = "skip";
         if (shouldFix && severity === "critical") recommendation = "fix_urgent";
-        else if (shouldFix && severity === "high") recommendation = "fix_prioritized";
+        else if (shouldFix && severity === "high")
+          recommendation = "fix_prioritized";
         else if (shouldFix && scope !== "large") recommendation = "fix";
         else if (shouldFix) recommendation = "needs_scoping";
         else if (isQuestion) recommendation = "skip_question";
-        else if (issue2.assignee) recommendation = "skip_assigned";
+        else if (assignee) recommendation = "skip_assigned";
         else recommendation = "skip";
         const result = {
           issue_number: num,
-          url: issue2.html_url,
+          url: htmlUrl,
           classification: isBug ? "bug" : isFeature ? "feature" : isQuestion ? "question" : "other",
           severity,
           scope,
@@ -15637,51 +15645,87 @@ Use BEFORE planning any fix \u2014 this is the mandatory evaluation gate.`,
     name: "cgao_analyze_codebase",
     description: `Analyze the codebase to find files and code areas relevant to an issue.
 Searches for referenced files, functions, error messages, and related code patterns.
-Use AFTER triage to understand what needs to change.`,
+Use AFTER triage to understand what needs to change.
+
+IMPORTANT \u2014 This tool does NOT call GitHub's API. You must provide the issue body/text.
+  1. First use mcp__github__issue_read (method: "get") to get the issue content
+  2. Pass issue_title and issue_body to this tool
+  3. This tool searches the LOCAL filesystem and git history`,
     schema: {
       type: "object",
       properties: {
-        owner: { type: "string" },
-        repo: { type: "string" },
-        issue_number: { type: "number", description: "Issue number for context." },
-        search_terms: { type: "array", items: { type: "string" }, description: "Additional search terms from the issue." }
+        issue_number: {
+          type: "number",
+          description: "Issue number for state file naming."
+        },
+        issue_title: {
+          type: "string",
+          description: "Issue title (used for git log search)."
+        },
+        issue_body: {
+          type: "string",
+          description: "Full issue body text. Used to extract file names, function names, error messages."
+        },
+        search_terms: {
+          type: "array",
+          items: { type: "string" },
+          description: "Additional search terms to grep for in the codebase."
+        }
       },
       required: ["issue_number"]
     },
     handler: async (args) => {
       try {
-        const { owner, repo: repoName } = await repo();
-        const rOwner = args.owner || owner;
-        const rRepo = args.repo || repoName;
         const num = args.issue_number;
+        const title = str(args.issue_title);
+        const body = str(args.issue_body);
         const extraTerms = args.search_terms || [];
-        const issue2 = await getIssue(rOwner, rRepo, num);
-        const body = issue2.body || "";
         const filePattern = /`?([\w/.-]+\.(tsx?|jsx?|py|go|rs|java|rb|css|html|json|ya?ml))`?/gi;
         const funcPattern = /\b([\w]+\s*\([^)]*\))\b/g;
         const errorPattern = /(?:Error|Exception|Panic|Fatal)[:\s]*(.+?)(?:\n|$)/gi;
         const files = [...body.matchAll(filePattern)].map((m) => m[1]);
         const functions = [...body.matchAll(funcPattern)].map((m) => m[1]).filter((f) => f.length > 5);
         const errors = [...body.matchAll(errorPattern)].map((m) => m[1].trim());
-        const allTerms = [.../* @__PURE__ */ new Set([...files, ...functions, ...errors, ...extraTerms])];
+        const allTerms = [
+          .../* @__PURE__ */ new Set([...files, ...functions, ...errors, ...extraTerms])
+        ];
         const findings = [];
         for (const term of allTerms.slice(0, 10)) {
           try {
-            const result2 = shell(`grep -rl --include="*.{ts,tsx,js,jsx,py,go,rs,java}" "${term.replace(/"/g, '\\"')}" . 2>/dev/null | head -5`);
+            const escaped = term.replace(/"/g, '\\"').replace(/`/g, "\\`");
+            const result2 = shell(
+              `grep -rl --include="*.{ts,tsx,js,jsx,py,go,rs,java}" "${escaped}" . 2>/dev/null | head -5`
+            );
             const matchedFiles = result2 ? result2.split("\n").filter(Boolean) : [];
-            findings.push({ term, matches: matchedFiles.length, files: matchedFiles });
+            findings.push({
+              term,
+              matches: matchedFiles.length,
+              files: matchedFiles
+            });
           } catch {
             findings.push({ term, matches: 0, files: [] });
           }
         }
         let relatedCommits = "";
         try {
-          relatedCommits = shell(`git log --oneline --grep="${issue2.title?.slice(0, 30) || ""}" -5 2>/dev/null`);
+          const searchTitle = title.slice(0, 40);
+          relatedCommits = shell(
+            `git log --oneline --grep="${searchTitle}" -5 2>/dev/null`
+          );
         } catch {
           relatedCommits = "";
         }
         const structure = {};
-        for (const dir of ["src", "lib", "app", "components", "utils", "api", "routes", "handlers"]) {
+        for (const dir of [
+          "src",
+          "lib",
+          "app",
+          "components",
+          "utils",
+          "api",
+          "routes",
+          "handlers"
+        ]) {
           if ((0, import_fs.existsSync)(dir)) {
             try {
               structure[dir] = shell(`find ${dir} -type f | head -10`).split("\n").filter(Boolean);
@@ -15692,7 +15736,7 @@ Use AFTER triage to understand what needs to change.`,
         }
         const result = {
           issue_number: num,
-          title: issue2.title,
+          title: title || `#${num}`,
           extracted_terms: allTerms,
           findings: findings.filter((f) => f.matches > 0),
           related_commits: relatedCommits || "none found",
@@ -15717,27 +15761,36 @@ Use AFTER triage and codebase analysis, BEFORE implementation.`,
     schema: {
       type: "object",
       properties: {
-        owner: { type: "string" },
-        repo: { type: "string" },
         issue_number: { type: "number" },
-        fix_approach: { type: "string", description: "High-level approach for the fix." },
-        affected_files: { type: "array", items: { type: "string" }, description: "Files that need changes." }
+        fix_approach: {
+          type: "string",
+          description: "High-level approach for the fix."
+        },
+        affected_files: {
+          type: "array",
+          items: { type: "string" },
+          description: "Files that need changes."
+        }
       },
       required: ["issue_number", "fix_approach"]
     },
     handler: async (args) => {
       try {
-        const { owner, repo: repoName } = await repo();
-        const rOwner = args.owner || owner;
-        const rRepo = args.repo || repoName;
         const num = args.issue_number;
         const approach = args.fix_approach;
         const affected = args.affected_files || [];
         const triage = readState(`triage-${num}`);
         const analysis = readState(`analysis-${num}`);
+        let repoMeta = "";
+        try {
+          const r = resolveRepo();
+          repoMeta = `${r.owner}/${r.repo}`;
+        } catch {
+          repoMeta = "unknown";
+        }
         const plan = {
           issue_number: num,
-          repo: `${rOwner}/${rRepo}`,
+          repo: repoMeta,
           fix_approach: approach,
           steps: [],
           pre_checks: [],
@@ -15745,14 +15798,40 @@ Use AFTER triage and codebase analysis, BEFORE implementation.`,
         };
         let order = 0;
         if (affected.length > 0) {
-          plan.steps.push({ order: ++order, description: `Implement core fix in ${affected.slice(0, 3).join(", ")}`, files: affected.slice(0, 5), estimated_complexity: affected.length > 3 ? "high" : "medium", test_strategy: "Unit tests for changed functions" });
+          plan.steps.push({
+            order: ++order,
+            description: `Implement core fix in ${affected.slice(0, 3).join(", ")}`,
+            files: affected.slice(0, 5),
+            estimated_complexity: affected.length > 3 ? "high" : "medium",
+            test_strategy: "Unit tests for changed functions"
+          });
         }
-        plan.steps.push({ order: ++order, description: "Add or update tests to cover the fix and prevent regression", files: [], estimated_complexity: "medium", test_strategy: "Verify tests fail before fix, pass after" });
+        plan.steps.push({
+          order: ++order,
+          description: "Add or update tests to cover the fix and prevent regression",
+          files: [],
+          estimated_complexity: "medium",
+          test_strategy: "Verify tests fail before fix, pass after"
+        });
         if (triage && triage.classification === "feature") {
-          plan.steps.push({ order: ++order, description: "Update documentation if this is a user-facing change", files: ["README.md", "CHANGELOG.md"], estimated_complexity: "low", test_strategy: "N/A" });
+          plan.steps.push({
+            order: ++order,
+            description: "Update documentation if this is a user-facing change",
+            files: ["README.md", "CHANGELOG.md"],
+            estimated_complexity: "low",
+            test_strategy: "N/A"
+          });
         }
-        plan.pre_checks = ["All existing tests pass on main branch", "Feature branch created from latest main"];
-        plan.post_checks = ["All tests pass", `Issue #${num} scenario verified`, "No unrelated files changed", "Linter/type-check passes"];
+        plan.pre_checks = [
+          "All existing tests pass on main branch",
+          "Feature branch created from latest main"
+        ];
+        plan.post_checks = [
+          "All tests pass",
+          `Issue #${num} scenario verified`,
+          "No unrelated files changed",
+          "Linter/type-check passes"
+        ];
         writeState(`plan-${num}`, plan);
         return ok(JSON.stringify(plan, null, 2));
       } catch (e) {
@@ -15767,15 +15846,24 @@ Use AFTER triage and codebase analysis, BEFORE implementation.`,
     name: "cgao_assess_pr_quality",
     description: `Assess the quality of a pull request branch by running automated checks:
 compilation, linting, test suite, diff analysis. Returns a structured quality report.
-Use BEFORE creating the PR or as part of self-review.`,
+Use BEFORE creating the PR or as part of self-review.
+
+This tool uses only LOCAL git operations \u2014 no GitHub API calls.`,
     schema: {
       type: "object",
       properties: {
-        owner: { type: "string" },
-        repo: { type: "string" },
-        pr_number: { type: "number", description: "PR number (optional \u2014 checks current branch if omitted)." },
-        branch: { type: "string", description: "Branch name to assess (optional)." },
-        base: { type: "string", description: "Base branch. Default: main." }
+        pr_number: {
+          type: "number",
+          description: "PR number (optional \u2014 checks current branch if omitted)."
+        },
+        branch: {
+          type: "string",
+          description: "Branch name to assess (optional)."
+        },
+        base: {
+          type: "string",
+          description: "Base branch. Default: main."
+        }
       }
     },
     handler: async (args) => {
@@ -15788,44 +15876,118 @@ Use BEFORE creating the PR or as part of self-review.`,
         }
         const checks = [];
         if (headBranch === base) {
-          checks.push({ check: "branch", status: "FAIL", detail: `On ${base} branch \u2014 switch to a feature branch` });
+          checks.push({
+            check: "branch",
+            status: "FAIL",
+            detail: `On ${base} branch \u2014 switch to a feature branch`
+          });
         } else {
-          checks.push({ check: "branch", status: "PASS", detail: `Feature branch: ${headBranch}` });
+          checks.push({
+            check: "branch",
+            status: "PASS",
+            detail: `Feature branch: ${headBranch}`
+          });
         }
         try {
           shell(`git fetch origin ${base} 2>/dev/null`);
-          const behind = shell(`git rev-list ${base}..HEAD --count 2>/dev/null`).trim();
-          checks.push({ check: "up_to_date", status: "PASS", detail: `${behind} commits ahead of ${base}` });
+          const behind = shell(
+            `git rev-list ${base}..HEAD --count 2>/dev/null`
+          ).trim();
+          checks.push({
+            check: "up_to_date",
+            status: "PASS",
+            detail: `${behind} commits ahead of ${base}`
+          });
         } catch {
-          checks.push({ check: "up_to_date", status: "WARN", detail: "Could not verify sync with base" });
+          checks.push({
+            check: "up_to_date",
+            status: "WARN",
+            detail: "Could not verify sync with base"
+          });
         }
-        const diffStat = shell(`git diff --stat origin/${base}...HEAD 2>/dev/null`).trim();
+        const diffStat = shell(
+          `git diff --stat origin/${base}...HEAD 2>/dev/null`
+        ).trim();
         const filesChanged = diffStat.split("\n").length - 1;
         const diffSize = filesChanged > 20 ? "WARN" : "PASS";
-        checks.push({ check: "diff_size", status: diffSize, detail: `${filesChanged} files changed` });
-        const unrelatedPatterns = ["package-lock.json", "yarn.lock", ".DS_Store", "node_modules/", ".env"];
-        const changedFiles = shell(`git diff --name-only origin/${base}...HEAD 2>/dev/null`).split("\n").filter(Boolean);
-        const suspicious = changedFiles.filter((f) => unrelatedPatterns.some((p) => f.includes(p)));
+        checks.push({
+          check: "diff_size",
+          status: diffSize,
+          detail: `${filesChanged} files changed`
+        });
+        const unrelatedPatterns = [
+          "package-lock.json",
+          "yarn.lock",
+          ".DS_Store",
+          "node_modules/",
+          ".env"
+        ];
+        const changedFiles = shell(
+          `git diff --name-only origin/${base}...HEAD 2>/dev/null`
+        ).split("\n").filter(Boolean);
+        const suspicious = changedFiles.filter(
+          (f) => unrelatedPatterns.some((p) => f.includes(p))
+        );
         if (suspicious.length > 0) {
-          checks.push({ check: "unrelated_files", status: "WARN", detail: `Potentially unrelated: ${suspicious.join(", ")}` });
+          checks.push({
+            check: "unrelated_files",
+            status: "WARN",
+            detail: `Potentially unrelated: ${suspicious.join(", ")}`
+          });
         } else {
-          checks.push({ check: "unrelated_files", status: "PASS", detail: "No unrelated files detected" });
+          checks.push({
+            check: "unrelated_files",
+            status: "PASS",
+            detail: "No unrelated files detected"
+          });
         }
-        const commits = shell(`git log origin/${base}...HEAD --format="%s" 2>/dev/null`).split("\n").filter(Boolean);
+        const commits = shell(
+          `git log origin/${base}...HEAD --format="%s" 2>/dev/null`
+        ).split("\n").filter(Boolean);
         const hasIssueRef = commits.some((c) => /#\d+/.test(c));
-        const hasConventional = commits.some((c) => /^(fix|feat|chore|docs|refactor|test|style|perf)(\(.+\))?:/.test(c));
-        if (hasConventional && hasIssueRef) checks.push({ check: "commit_quality", status: "PASS", detail: "Conventional commits with issue references" });
-        else if (hasConventional) checks.push({ check: "commit_quality", status: "WARN", detail: "Conventional commits but no issue reference" });
-        else checks.push({ check: "commit_quality", status: "WARN", detail: "Consider using conventional commits (fix:/feat:) and referencing the issue" });
-        const testFiles = changedFiles.filter((f) => /test|spec|__tests__/.test(f));
-        if (testFiles.length > 0) checks.push({ check: "tests", status: "PASS", detail: `${testFiles.length} test file(s) changed` });
-        else checks.push({ check: "tests", status: "WARN", detail: "No test files detected in diff \u2014 consider adding tests" });
+        const hasConventional = commits.some(
+          (c) => /^(fix|feat|chore|docs|refactor|test|style|perf)(\(.+\))?:/.test(c)
+        );
+        if (hasConventional && hasIssueRef)
+          checks.push({
+            check: "commit_quality",
+            status: "PASS",
+            detail: "Conventional commits with issue references"
+          });
+        else if (hasConventional)
+          checks.push({
+            check: "commit_quality",
+            status: "WARN",
+            detail: "Conventional commits but no issue reference"
+          });
+        else
+          checks.push({
+            check: "commit_quality",
+            status: "WARN",
+            detail: "Consider using conventional commits (fix:/feat:) and referencing the issue"
+          });
+        const testFiles = changedFiles.filter(
+          (f) => /test|spec|__tests__/.test(f)
+        );
+        if (testFiles.length > 0)
+          checks.push({
+            check: "tests",
+            status: "PASS",
+            detail: `${testFiles.length} test file(s) changed`
+          });
+        else
+          checks.push({
+            check: "tests",
+            status: "WARN",
+            detail: "No test files detected in diff \u2014 consider adding tests"
+          });
         const passed = checks.filter((c) => c.status === "PASS").length;
         const warnings = checks.filter((c) => c.status === "WARN").length;
         const failures = checks.filter((c) => c.status === "FAIL").length;
         const result = {
           branch: headBranch,
           base,
+          pr_number: prNum || null,
           files_changed: changedFiles.length,
           commits: commits.length,
           check_summary: `${passed} passed, ${warnings} warnings, ${failures} failures`,
@@ -15845,60 +16007,125 @@ Use BEFORE creating the PR or as part of self-review.`,
     name: "cgao_check_merge_readiness",
     description: `Comprehensive merge readiness check for a PR. Analyzes CI status,
 required reviews, merge conflicts, and branch protection. Returns a detailed
-blocker report and recommended action. Use for monitoring PRs.`,
+blocker report and recommended action. Use for monitoring PRs.
+
+IMPORTANT \u2014 This tool does NOT call GitHub's API. You MUST fetch PR data first:
+  1. mcp__github__pull_request_read (method: "get") \u2192 pass as "pr"
+  2. mcp__github__pull_request_read (method: "get_reviews") \u2192 pass as "reviews"
+  3. mcp__github__pull_request_read (method: "get_status") \u2192 pass as "ci_status"
+  4. mcp__github__pull_request_read (method: "get_check_runs") \u2192 pass as "check_runs"
+Then pass all results to this tool for analysis.`,
     schema: {
       type: "object",
       properties: {
-        owner: { type: "string" },
-        repo: { type: "string" },
-        pr_number: { type: "number" }
+        pr_number: { type: "number", description: "PR number." },
+        pr: {
+          type: "object",
+          description: 'Full PR object from mcp__github__pull_request_read (method: "get"). Must include: title, state, head ({ref, sha}), base ({ref}), html_url, user ({login}), draft, mergeable, merged_at.'
+        },
+        reviews: {
+          type: "array",
+          description: 'Reviews array from mcp__github__pull_request_read (method: "get_reviews"). Each review should have: state, user ({login}), submitted_at.'
+        },
+        ci_status: {
+          type: "object",
+          description: 'CI status from mcp__github__pull_request_read (method: "get_status"). Optional. Should include: state, statuses (array of {context, state, description}).'
+        },
+        check_runs: {
+          type: "array",
+          description: 'Check runs from mcp__github__pull_request_read (method: "get_check_runs"). Optional. Each run should have: name, status, conclusion.'
+        }
       },
-      required: ["pr_number"]
+      required: ["pr_number", "pr"]
     },
     handler: async (args) => {
       try {
-        const { owner: o, repo: r } = await repo();
-        const rOwner = args.owner || o;
-        const rRepo = args.repo || r;
         const prNum = args.pr_number;
-        const pr = await getPR(rOwner, rRepo, prNum);
-        const [status, checks, reviews] = await Promise.all([
-          getPRStatus(rOwner, rRepo, pr.head.sha).catch(() => ({ state: "unknown", statuses: [] })),
-          getPRChecks(rOwner, rRepo, pr.head.sha).catch(() => ({ check_runs: [] })),
-          listReviews(rOwner, rRepo, prNum).catch(() => [])
-        ]);
+        const pr = args.pr;
+        if (!pr) {
+          return err(
+            'Missing required parameter "pr". First call mcp__github__pull_request_read (method: "get") to fetch the PR, then pass the returned object here.'
+          );
+        }
+        const reviews = arr(args.reviews);
+        const ciStatus = obj(args.ci_status);
+        const checkRuns = arr(args.check_runs);
+        const prTitle = str(pr.title);
+        const prState = str(pr.state);
+        const prHtmlUrl = str(pr.html_url);
+        const prDraft = Boolean(pr.draft);
+        const prMergeable = pr.mergeable;
+        const prMergedAt = pr.merged_at;
+        const prHead = obj(pr.head);
+        const prUser = obj(pr.user);
+        const headSha = prHead ? str(prHead.sha) : "";
         const blockers = [];
         const warnings = [];
-        const ciPassing = status.state === "success";
-        const ciRunning = status.state === "pending";
-        if (!ciPassing && !ciRunning) blockers.push(`CI failing: ${status.state}`);
-        else if (ciRunning) warnings.push("CI still running");
-        else warnings.push("CI passing");
-        const failedRuns = (checks.check_runs || []).filter((c) => c.conclusion === "failure");
-        if (failedRuns.length > 0) blockers.push(`${failedRuns.length} check(s) failed: ${failedRuns.map((c) => c.name).join(", ")}`);
-        const approvals = reviews.filter((r2) => r2.state === "APPROVED");
-        const changeRequests = reviews.filter((r2) => r2.state === "CHANGES_REQUESTED");
-        if (changeRequests.length > 0) blockers.push(`${changeRequests.length} reviewer(s) requested changes`);
-        if (approvals.length === 0 && changeRequests.length === 0) warnings.push("No reviews yet");
-        else if (approvals.length > 0) warnings.push(`${approvals.length} approval(s)`);
-        if (pr.merged_at) blockers.push("PR already merged");
-        if (pr.state === "closed") blockers.push("PR is closed");
-        if (pr.mergeable === false) blockers.push("PR has merge conflicts");
-        if (pr.draft) warnings.push("PR is a draft");
+        const ciState = ciStatus ? str(ciStatus.state) : "";
+        const ciPassing = ciState === "success";
+        const ciRunning = ciState === "pending";
+        if (!ciPassing && !ciRunning && ciState) {
+          blockers.push(`CI failing: ${ciState}`);
+        } else if (ciRunning) {
+          warnings.push("CI still running");
+        } else if (ciPassing) {
+          warnings.push("CI passing");
+        } else {
+          warnings.push('CI status unknown \u2014 run mcp__github__pull_request_read (method: "get_status")');
+        }
+        const failedRuns = checkRuns.filter(
+          (c) => c.conclusion === "failure"
+        );
+        if (failedRuns.length > 0) {
+          blockers.push(
+            `${failedRuns.length} check(s) failed: ${failedRuns.map((c) => str(c.name)).join(", ")}`
+          );
+        }
+        const approvals = reviews.filter(
+          (r) => r.state === "APPROVED"
+        );
+        const changeRequests = reviews.filter(
+          (r) => r.state === "CHANGES_REQUESTED"
+        );
+        if (changeRequests.length > 0) {
+          blockers.push(
+            `${changeRequests.length} reviewer(s) requested changes`
+          );
+        }
+        if (approvals.length === 0 && changeRequests.length === 0) {
+          warnings.push("No reviews yet");
+        } else if (approvals.length > 0) {
+          warnings.push(`${approvals.length} approval(s)`);
+        }
+        if (prMergedAt) blockers.push("PR already merged");
+        if (prState === "closed") blockers.push("PR is closed");
+        if (prMergeable === false)
+          blockers.push("PR has merge conflicts");
+        if (prDraft) warnings.push("PR is a draft");
         const ready = blockers.length === 0;
         const action = ready ? "MERGE" : changeRequests.length > 0 ? "FIX_AND_PUSH" : failedRuns.length > 0 ? "FIX_TESTS" : "WAIT";
         const result = {
           pr_number: prNum,
-          title: pr.title,
-          url: pr.html_url,
-          state: pr.state,
-          merged: !!pr.merged_at,
+          title: prTitle,
+          url: prHtmlUrl,
+          state: prState,
+          merged: !!prMergedAt,
+          head_sha: headSha,
+          author: prUser ? str(prUser.login) : "unknown",
           status: ready ? "\u2705 READY TO MERGE" : "\u274C BLOCKED",
           blockers,
           warnings,
-          ci: { state: status.state, failed_runs: failedRuns.map((c) => c.name) },
-          reviews: { approved: approvals.length, changes_requested: changeRequests.length, total: reviews.length },
-          mergeable: pr.mergeable,
+          ci: {
+            state: ciState || "unknown",
+            failed_runs: failedRuns.map((c) => str(c.name))
+          },
+          reviews: {
+            approved: approvals.length,
+            changes_requested: changeRequests.length,
+            total: reviews.length
+          },
+          mergeable: prMergeable,
+          draft: prDraft,
           recommended_action: action
         };
         return ok(JSON.stringify(result, null, 2));
@@ -15917,10 +16144,30 @@ the workflow is in and links related artifacts (triage, analysis, plan, PR).`,
     schema: {
       type: "object",
       properties: {
-        action: { type: "string", enum: ["get", "set", "list"], description: "get=read state, set=update state, list=all workflows." },
+        action: {
+          type: "string",
+          enum: ["get", "set", "list"],
+          description: "get=read state, set=update state, list=all workflows."
+        },
         issue_number: { type: "number", description: "Issue number." },
-        phase: { type: "string", enum: ["triaged", "analyzed", "planned", "implemented", "pr_created", "reviewed", "monitoring", "merged"], description: "Current phase (for set)." },
-        pr_number: { type: "number", description: "Linked PR number (for set)." }
+        phase: {
+          type: "string",
+          enum: [
+            "triaged",
+            "analyzed",
+            "planned",
+            "implemented",
+            "pr_created",
+            "reviewed",
+            "monitoring",
+            "merged"
+          ],
+          description: "Current phase (for set)."
+        },
+        pr_number: {
+          type: "number",
+          description: "Linked PR number (for set)."
+        }
       },
       required: ["action"]
     },
@@ -15930,7 +16177,9 @@ the workflow is in and links related artifacts (triage, analysis, plan, PR).`,
         if (action === "list") {
           ensureStateDir();
           const { readdirSync: rd } = await import("fs");
-          const files = rd(STATE_DIR).filter((f) => f.startsWith("workflow-") && f.endsWith(".json"));
+          const files = rd(STATE_DIR).filter(
+            (f) => f.startsWith("workflow-") && f.endsWith(".json")
+          );
           const workflows = files.map((f) => {
             const data = readState(f.replace(".json", ""));
             return data;
@@ -15940,7 +16189,9 @@ the workflow is in and links related artifacts (triage, analysis, plan, PR).`,
         const num = args.issue_number;
         if (action === "get") {
           const state = readState(`workflow-${num}`);
-          return ok(state ? JSON.stringify(state, null, 2) : `No workflow state for issue #${num}`);
+          return ok(
+            state ? JSON.stringify(state, null, 2) : `No workflow state for issue #${num}`
+          );
         }
         if (action === "set") {
           const existing = readState(`workflow-${num}`) || {};

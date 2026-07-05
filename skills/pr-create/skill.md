@@ -24,9 +24,8 @@ Check with `mcp__cgao__cgao_workflow_state` `action: "get"`.
 
 | Tool | Purpose |
 |------|---------|
-| `mcp__cgao__cgao_assess_pr_quality` | Final quality gate |
-| `mcp__github__create_pull_request` | Create the PR |
-| `mcp__github__add_labels` | Add labels to PR |
+| `mcp__cgao__cgao_assess_pr_quality` | Final quality gate (local git only) |
+| `mcp__github__create_pull_request` | Create the PR on GitHub |
 | `mcp__cgao__cgao_workflow_state` | Track progress |
 
 ---
@@ -34,6 +33,7 @@ Check with `mcp__cgao__cgao_workflow_state` `action: "get"`.
 ## Phase 1: Final Quality Gate
 
 Call `mcp__cgao__cgao_assess_pr_quality` with the current branch.
+This tool uses only LOCAL git operations — no GitHub API calls needed.
 
 **Quality gate criteria:**
 - `branch`: Must be PASS (not on main)
@@ -82,7 +82,7 @@ Closes #<ISSUE_NUMBER>
 - [ ] Issue referenced in commits
 
 ---
-🤖 Generated with [CGAO](https://github.com/user/cgao) — Issue #<N>
+🤖 Generated with [CGAO](https://github.com/RankoHata/cgao) — Issue #<N>
 ```
 
 ## Phase 3: Create PR
@@ -102,7 +102,7 @@ On success, note the PR number and URL.
 
 ## Phase 4: Add Metadata
 
-1. Add relevant labels:
+1. Add relevant labels via `mcp__github__issue_write`:
    - Type: `bug` or `enhancement` or `fix`
    - If tests changed: `tests`
    - If docs changed: `documentation`

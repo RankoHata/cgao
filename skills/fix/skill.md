@@ -24,7 +24,7 @@ Check with `mcp__cgao__cgao_workflow_state` `action: "get"`.
 | Tool | Purpose |
 |------|---------|
 | `mcp__cgao__cgao_plan_fix` | Generate structured fix plan |
-| `mcp__cgao__cgao_assess_pr_quality` | Pre-PR quality checks |
+| `mcp__cgao__cgao_assess_pr_quality` | Pre-PR quality checks (local git only) |
 | `mcp__cgao__cgao_workflow_state` | Track progress |
 
 ## Agents
@@ -40,7 +40,7 @@ Check with `mcp__cgao__cgao_workflow_state` `action: "get"`.
 
 1. Call `mcp__cgao__cgao_workflow_state` `action: "get"` to verify prior phases completed
 2. Read triage and analysis results from `.cgao/triage-<N>.json` and `.cgao/analysis-<N>.json`
-3. Read the issue body for acceptance criteria
+3. Read the issue body for acceptance criteria (use `mcp__github__issue_read` if you need the full issue text)
 
 ## Phase 2: Create Fix Plan
 
@@ -81,6 +81,7 @@ Save the plan: call `mcp__cgao__cgao_plan_fix` with the approach and affected fi
 ## Phase 4: Quality Check
 
 Before considering the fix complete, call `mcp__cgao__cgao_assess_pr_quality` with the branch name.
+This tool uses only LOCAL git operations — no GitHub API calls.
 
 Address any FAIL or WARN findings:
 - **FAIL**: Must fix before proceeding

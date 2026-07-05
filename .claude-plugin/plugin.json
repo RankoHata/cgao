@@ -1,6 +1,6 @@
 {
   "name": "cgao",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Claude GitHub Auto Orchestra — multi-phase automated GitHub workflow with specialized agents, tools, and skills",
   "author": { "name": "cgao" },
   "license": "MIT",

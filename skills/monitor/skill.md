@@ -20,26 +20,66 @@ Combine with OMC for polling:
 /loop 5m /cgao:monitor 42
 ```
 
+## Architecture: GitHub MCP fetches data, CGAO MCP analyzes it
+
+CGAO tools **NEVER** call GitHub's API directly. For merge readiness checking,
+you MUST fetch all PR data via GitHub MCP tools first, then pass it to CGAO:
+
+```
+GitHub MCP (fetch PR, reviews, CI, checks) → CGAO MCP (analyze blockers)
+```
+
 ## Tools Used
 
 | Tool | Purpose |
 |------|---------|
-| `mcp__github__get_pull_request` | Fetch PR metadata & mergeable status |
-| `mcp__cgao__cgao_check_merge_readiness` | **Comprehensive merge blocker analysis** |
+| `mcp__github__pull_request_read` | **Step 1:** Fetch PR metadata (method: "get") |
+| `mcp__github__pull_request_read` | **Step 2:** Fetch reviews (method: "get_reviews") |
+| `mcp__github__pull_request_read` | **Step 3:** Fetch CI status (method: "get_status") |
+| `mcp__github__pull_request_read` | **Step 4:** Fetch check runs (method: "get_check_runs") |
+| `mcp__cgao__cgao_check_merge_readiness` | **Step 5:** Comprehensive blocker analysis |
 | `mcp__cgao__cgao_workflow_state` | Track monitoring status |
 
 ---
 
 ## Phase 1: Full Status Scan
 
-Call `mcp__cgao__cgao_check_merge_readiness` with the PR number.
+You MUST follow this sequence. CGAO tools need data — they do NOT fetch it themselves.
 
-This comprehensive tool checks:
-- CI status (all check runs)
+**Step 1.1** — Fetch PR metadata:
+```
+mcp__github__pull_request_read({method: "get", pullNumber: <N>})
+```
+
+**Step 1.2** — Fetch reviews:
+```
+mcp__github__pull_request_read({method: "get_reviews", pullNumber: <N>})
+```
+
+**Step 1.3** — Fetch CI status:
+```
+mcp__github__pull_request_read({method: "get_status", pullNumber: <N>})
+```
+
+**Step 1.4** — Fetch check runs:
+```
+mcp__github__pull_request_read({method: "get_check_runs", pullNumber: <N>})
+```
+
+**Step 1.5** — Analyze all data with CGAO:
+Call `mcp__cgao__cgao_check_merge_readiness` with:
+- `pr_number`: <N>
+- `pr`: the FULL PR object from Step 1.1
+- `reviews`: the reviews array from Step 1.2
+- `ci_status`: the CI status object from Step 1.3
+- `check_runs`: the check runs array from Step 1.4
+
+The CGAO tool analyzes ALL the data together and returns:
+- CI status (passing / failing / running)
 - Review status (approvals, change requests)
 - Merge conflicts
-- Branch protection rules
 - PR state (open/closed/draft/merged)
+- Recommended action
 
 ## Phase 2: Analyze Blockers
 
@@ -135,7 +175,7 @@ This will check every 10 minutes and report if status changes.
 
 ## Rules
 
-1. **Always use `cgao_check_merge_readiness`** — it does the comprehensive analysis
+1. **Always fetch via GitHub MCP first, then analyze with CGAO** — 5 sequential steps in Phase 1
 2. **Be specific about blockers** — don't just say "blocked", say what's blocking and how to fix
 3. **Update workflow state** — keeps tracking across sessions
 4. **When merged** — celebrate! The pipeline is complete.

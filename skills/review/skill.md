@@ -19,9 +19,9 @@ Performs automated multi-dimensional code review of a pull request. Uses pr-revi
 
 | Tool | Purpose |
 |------|---------|
-| `mcp__github__get_pull_request` | Fetch PR details |
-| `mcp__cgao__cgao_assess_pr_quality` | Automated quality checks |
-| `mcp__github__create_pull_request_review` | Submit review |
+| `mcp__github__pull_request_read` | Fetch PR details, diff, and files |
+| `mcp__cgao__cgao_assess_pr_quality` | Automated quality checks (local git only) |
+| `mcp__github__pull_request_review_write` | Submit review on GitHub |
 | `mcp__cgao__cgao_workflow_state` | Track review status |
 
 ## Agents
@@ -34,13 +34,16 @@ Performs automated multi-dimensional code review of a pull request. Uses pr-revi
 
 ## Phase 1: Fetch PR
 
-1. Call `mcp__github__get_pull_request` with the PR number
-2. Verify PR is open — if merged or closed, report and stop
-3. Note: title, author, base/head branches, file count
+1. Call `mcp__github__pull_request_read` with `method: "get"` and the PR number
+2. Call `mcp__github__pull_request_read` with `method: "get_files"` to see changed files
+3. Call `mcp__github__pull_request_read` with `method: "get_diff"` to get the full diff
+4. Verify PR is open — if merged or closed, report and stop
+5. Note: title, author, base/head branches, file count
 
 ## Phase 2: Automated Checks
 
 Call `mcp__cgao__cgao_assess_pr_quality` with `pr_number: <N>`.
+This tool uses only LOCAL git operations.
 
 If the PR branch is available locally, also run:
 ```bash
@@ -51,7 +54,8 @@ git fetch origin pull/<N>/head:pr-<N>
 
 Delegate to **pr-reviewer agent** (Opus). Provide:
 - PR title and description
-- The diff (from `git diff main...pr-<N>` or the GitHub comparison)
+- The diff (from Phase 1 `get_diff`)
+- Changed files list (from Phase 1 `get_files`)
 - Quality check results from Phase 2
 
 The pr-reviewer agent analyzes across 7 dimensions:
@@ -107,10 +111,11 @@ Structure the review output:
 
 ## Phase 5: Submit Review
 
-Call `mcp__github__create_pull_request_review`:
+Call `mcp__github__pull_request_review_write`:
 ```json
 {
-  "pr_number": <N>,
+  "method": "create",
+  "pullNumber": <N>,
   "body": "<the review from Phase 4>",
   "event": "<APPROVE | REQUEST_CHANGES | COMMENT>"
 }
