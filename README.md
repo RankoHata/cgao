@@ -74,36 +74,12 @@ claude mcp list
 
 ### Step 2: Install CGAO
 
-在 Claude Code 会话中，通过 `/plugin` 命令安装：
+在 Claude Code 会话中执行：
 
 ```
-/plugin install https://github.com/RankoHata/cgao
+/plugin marketplace add https://github.com/RankoHata/cgao#dev
+/plugin install cgao@cgao
 ```
-
-或从本地开发目录安装：
-
-```
-/plugin marketplace add /path/to/cgao
-/plugin install cgao
-```
-
-<details>
-<summary>开发者：克隆 dev 分支本地安装</summary>
-
-```bash
-git clone -b dev git@github.com:RankoHata/cgao.git
-cd cgao
-npm install
-npm run build
-```
-
-然后在 Claude Code 会话中：
-
-```
-/plugin marketplace add ./cgao
-/plugin install cgao
-```
-</details>
 
 Verify:
 
@@ -149,16 +125,17 @@ claude mcp add-json github '{"type":"http","url":"https://api.githubcopilot.com/
 
 **"Plugin not found"**
 ```
-# 在 Claude Code 会话中重装
 /plugin uninstall cgao
-/plugin install https://github.com/RankoHata/cgao
+/plugin marketplace add https://github.com/RankoHata/cgao#dev
+/plugin install cgao@cgao
 ```
 
 **"Plugin not showing up"**
 ```
 /plugin list
 # 如果没有，重装
-/plugin install https://github.com/RankoHata/cgao
+/plugin marketplace add https://github.com/RankoHata/cgao#dev
+/plugin install cgao@cgao
 ```
 
 **"mcp__cgao__* tools not found"**
@@ -168,7 +145,8 @@ claude mcp list
 # Should show both "github" and "cgao"
 # If cgao is missing, re-install the plugin:
 # /plugin uninstall cgao
-# /plugin install https://github.com/RankoHata/cgao
+# /plugin marketplace add https://github.com/RankoHata/cgao#dev
+# /plugin install cgao@cgao
 # Then restart Claude Code
 ```
 
