@@ -59,12 +59,10 @@ export GITHUB_PAT=ghp_xxxxxxxxxxxx
 
 ### Step 1: Install the Official GitHub MCP Server
 
-CGAO depends on the official `@anthropic-ai/github-mcp-server` for all raw GitHub API operations.
+CGAO depends on the official [`github/github-mcp-server`](https://github.com/github/github-mcp-server) for all raw GitHub API operations.
 
 ```bash
-claude mcp add github --transport stdio \
-  --env GITHUB_PERSONAL_ACCESS_TOKEN=$GITHUB_PAT \
-  -- npx -y @anthropic-ai/github-mcp-server
+claude mcp add-json github '{"type":"http","url":"https://api.githubcopilot.com/mcp","headers":{"Authorization":"Bearer '"$GITHUB_PAT"'"}}'
 ```
 
 Verify:
@@ -149,9 +147,7 @@ export GITHUB_PAT=ghp_xxxx
 
 **"Official GitHub MCP not registered"**
 ```bash
-claude mcp add github --transport stdio \
-  --env GITHUB_PERSONAL_ACCESS_TOKEN=$GITHUB_PAT \
-  -- npx -y @anthropic-ai/github-mcp-server
+claude mcp add-json github '{"type":"http","url":"https://api.githubcopilot.com/mcp","headers":{"Authorization":"Bearer '"$GITHUB_PAT"'"}}'
 ```
 
 **"Plugin not found in marketplace"**

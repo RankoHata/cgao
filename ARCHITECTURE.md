@@ -79,11 +79,6 @@ MCP 协议的服务声明。Claude Code 读取此文件，为每个条目 spawn 
 ```jsonc
 {
   "mcpServers": {
-    "github": {                             // → mcp__github__*
-      "command": "npx",
-      "args": ["-y", "@anthropic-ai/github-mcp-server"],
-      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PAT}" }
-    },
     "cgao": {                               // → mcp__cgao__*
       "command": "node",
       "args": ["${CLAUDE_PLUGIN_ROOT}/bridge/mcp-server.cjs"],
@@ -92,6 +87,8 @@ MCP 协议的服务声明。Claude Code 读取此文件，为每个条目 spawn 
   }
 }
 ```
+
+> GitHub MCP Server (`github/github-mcp-server`) 是用户通过 `claude mcp add-json` 单独安装的前置依赖，不在插件 `.mcp.json` 中声明。
 
 **两个 MCP 服务器的分工**：
 | 服务器 | 工具数 | 职责 |
@@ -561,7 +558,7 @@ npm bin 入口。`package.json` 中 `"bin": { "cgao": "bin/cgao.js" }` 使 npm �
 │ Agent 按 skill 步骤执行                       │
 │                                             │
 │ Step 1: mcp__github__search_issues          │
-│   → 官方 MCP Server (npx @anthropic-ai/...)  │
+│   → 官方 GitHub MCP Server (用户前置安装)      │
 │   → GitHub API → 返回 issue 列表             │
 │                                             │
 │ Step 2: mcp__cgao__cgao_triage_issue (#42)  │

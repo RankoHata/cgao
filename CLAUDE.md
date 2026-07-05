@@ -8,7 +8,7 @@ A Claude Code plugin for automated GitHub issue-to-merge workflows. Multi-phase,
 - **Language**: TypeScript (compiles to `dist/`), Markdown (skills/agents/commands)
 - **Runtime**: Node.js ≥ 20
 - **Dependencies**: `@modelcontextprotocol/sdk` (MCP server), `esbuild` + `typescript` (dev)
-- **External dependency**: `@anthropic-ai/github-mcp-server` (official GitHub MCP)
+- **External dependency**: [`github/github-mcp-server`](https://github.com/github/github-mcp-server) — user installs via `claude mcp add-json` (remote HTTP, one command)
 - **Build**: `npm run build` → `tsc` + `node scripts/build-mcp-server.mjs`
 - **Install**: `claude plugins install https://github.com/RankoHata/cgao`
 - **State**: `.cgao/` directory (JSON files, committed to repo's `.gitignore` but NOT plugin's)
@@ -16,12 +16,12 @@ A Claude Code plugin for automated GitHub issue-to-merge workflows. Multi-phase,
 ## Architecture
 
 ```
-Plugin Registration → 2 MCP Servers → 6 Skills → 3 Agents → 6 Smart Tools
+Plugin Registration → 1 MCP Server → 6 Skills → 3 Agents → 6 Smart Tools
 ```
 
 ### Layers
-1. **`.claude-plugin/plugin.json`** — plugin entry point. Declares 6 skills (→ `/cgao:scan` etc), 2 MCP servers (`.mcp.json`), 6 commands
-2. **`.mcp.json`** — MCP server declarations. Official GitHub MCP (`npx @anthropic-ai/github-mcp-server`) + CGAO custom MCP (`node bridge/mcp-server.cjs`)
+1. **`.claude-plugin/plugin.json`** — plugin entry point. Declares 6 skills (→ `/cgao:scan` etc), 1 MCP server (`.mcp.json`), 6 commands
+2. **`.mcp.json`** — MCP server declaration. CGAO custom MCP (`node bridge/mcp-server.cjs`). GitHub MCP is a prerequisite installed separately by the user.
 3. **`src/mcp/tools.ts`** — 6 intelligent MCP tools (`mcp__cgao__*`). These ADD intelligence on top of the official GitHub MCP, not duplicate it
 4. **`src/github/api.ts`** — lightweight REST client used internally by tools (NOT exposed as MCP tools)
 5. **`src/agents/definitions.ts`** — 3 specialized agents (issue-triage/sonnet, fix-planner/opus, pr-reviewer/opus)
